@@ -1,4 +1,4 @@
-## Create Graph Data Base Neo4j
+// Create Graph Data Base Neo4j
 
 // Create constraints
 CREATE CONSTRAINT Person_personId IF NOT EXISTS
