@@ -34,9 +34,7 @@ Establishment:l.locationName,
 Start_date_overlap: v_healthy.visitStart,
 End_date_overlap: v_healthy.visitEnd}) AS Contact;
 
-//6)  Once the previous query is obtained, by adding three statements to it, obtain a table that has 
-the name of the infected person and another column with the number of healthy individuals they 
-have had contact with, obtaining that number from the elements of the JSON array
+//6)  Once the previous query is obtained, by adding three statements to it, obtain a table that has the name of the infected person and another column with the number of healthy individuals they have had contact with, obtaining that number from the elements of the JSON array
 
 MATCH (infected:Person {healthStatus:'Infected'})-[:MAKES_VISIT]->(v_infected:Visit)-[:TO_ESTABLISHMENT]->(l:Location)<-[:TO_ESTABLISHMENT]-(v_healthy:Visit)<-[:MAKES_VISIT]-(healthy:Person {healthStatus:'Healthy'})
 WHERE v_infected.visitStart <v_healthy.visitEnd AND v_infected.visitEnd >v_healthy.visitStart
@@ -47,16 +45,13 @@ End_date_overlap: v_healthy.visitEnd}) AS Contact
 RETURN infected.personName AS  Infected_person,Number_of_healthy_contacts,Contact
 ORDER BY Number_of_healthy_contacts DESC;
 
-// 7)  Find those individuals (if any) who visited an establishment even after knowing they had tested 
-positive.
+// 7)  Find those individuals (if any) who visited an establishment even after knowing they had tested positive.
 
 MATCH (n:Person {healthStatus:'Infected'})-[:MAKES_VISIT]->(v_infected:Visit)-[:TO_ESTABLISHMENT]->(l:Location)
 WHERE v_infected.visitStart>n.testResultTime
 RETURN n.personName AS InfectedPerson,l AS Establisment,n.testResultTime AS TestDate,v_infected.visitStart AS VisitDate;
 
-//8)  Now that all healthy individuals who coincided in any establishment with an infected person 
-have been obtained, it is desired to find out the exact time (duration) that each healthy person 
-coincided with person p1
+//8)  Now that all healthy individuals who coincided in any establishment with an infected person have been obtained, it is desired to find out the exact time (duration) that each healthy person coincided with person p1
 
 MATCH (infected:Person{healthStatus:'Infected'})-[:MAKES_VISIT]->(v_infected:Visit)-[:TO_ESTABLISHMENT]->(l:Location)<-[:TO_ESTABLISHMENT]-(v_healthy:Visit)<-[:MAKES_VISIT]-(healthy:Person{healthStatus:'Healthy'})
 WITH infected, healthy, v_infected, v_healthy, l,
@@ -72,9 +67,7 @@ RETURN healthy.personName AS HealthyPerson, infected.personName AS InfectedPerso
 ORDER BY Spreading_duration DESC;
 
 
-// 9)   A person has been in two different places with infected individuals; in one, they were in contact 
-for an hour and a half, and in the other, for two hours. The total exposure of that person will have 
-been three and a half hours
+// 9)   A person has been in two different places with infected individuals; in one, they were in contact for an hour and a half, and in the other, for two hours. The total exposure of that person will have been three and a half hours
 
 MATCH (infected:Person{healthStatus:'Infected'})-[:MAKES_VISIT]->(v_infected:Visit)-[:TO_ESTABLISHMENT]->(l:Location)<-[:TO_ESTABLISHMENT]-(v_healthy:Visit)<-[:MAKES_VISIT]-(healthy:Person{healthStatus:'Healthy'})
 WITH infected, healthy, v_infected, v_healthy, l,
@@ -92,8 +85,7 @@ ORDER BY TotalSpreading_duration DESC
 LIMIT 5;
 
 
-// 10)  It is intended to try to reduce attendance and implement even more precautionary measures in 
-those establishments where infected individuals have spent more time.**
+// 10)  It is intended to try to reduce attendance and implement even more precautionary measures in those establishments where infected individuals have spent more time.**
 
 // Calculate total visits by infected individuals in each establishment
 MATCH(infected:Person{healthStatus:'Infected'})-[:MAKES_VISIT]->(v_infected:Visit)-[:TO_ESTABLISHMENT]->(l:Location) 
